@@ -1,0 +1,104 @@
+"A201 / Fall 2019" (or "A597 / Fall 2019"), "Programming Assignment 02", Jaeyoung Choi , janechoi
+
+<TASK B>
+
+B-1. Nothing will be printed out.
+B-2. I would write down print in front and write down """ behind the function and before the codes end. Or write down the function print in front of every code. 
+
+
+<TASK C>
+
+C-1. 
+17
+int
+257
+string
+2.7
+float
+
+C-3. The syntax I wrote down was a bit different with the results printed out. I just thought of 'int' coming out as a result but it is printed out as <class 'int'>. The other types are printed out as the same format too.
+
+
+<TASK D>
+D-1.
+2.7
+<class 'float'>
+2
+2.7
+<class 'float'>
+
+>>Because there is no print in front of int(MyMeringue), the outcome is not printed out. 
+
+D-2. Float
+D-3. Float
+D-4. The type is not changed because the int(MyMeringue) line just makes the variable in an integer form. This means that it doesn't change the type, but just shows the integer form of the variable. (But still it is not printed out since there is no print in front) 
+
+
+
+<TASK E>
+
+E-1.
+17
+<class 'int'>
+17
+<class 'str'>
+
+E-2. Integer 
+E-3. String 
+E-4. myDaikon = str(myDaikon)
+
+<TASK F> 
+
+F-1. 
+257
+<class 'str'>
+257.0
+<class 'float'>
+
+
+F-2. String
+F-3. String
+F-4. The variable has no change of type because the codes only print out the results of the certain code. It doesn't change any type until the variable is actually told to be changed. (You have to write a code like "myDinner = float(myDinner)" to make the variable change)
+
+
+
+<TASK G> 
+
+G-1. int 
+G-2. int
+G-3. Error 
+;when inputting a string value into the function. 
+G-4. float
+G-5. float
+6. Error
+;when inputting a string value into the function. 
+G-7. str
+G-8. str
+G-9. str
+G-10. int
+G-11. float
+G-12. Error
+;when adding two different valuables that can't be added. (String[sequence] and float (or int))
+G-13. float 
+G-14. str 
+G-15. int
+G-16. float
+G-17. str
+G-18. Error 
+; when multiplying sequence by a non-integer
+G-19. float
+G-20. float
+G-21. int
+G-22. float
+
+
+
+
+
+
+
+
+
+
+
+

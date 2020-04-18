@@ -1,0 +1,72 @@
+"A201 / Fall 2019", "Programming Assignment 04", Jaeyoung Choi(Jane Choi)/ janechoi
+
+
+<A.1>
+'l'
+
+<A.2>
+'b'
+
+<A.3>
+'a'
+
+<A.4>
+'w'
+
+<A.5>
+
+When you use an index larger than the length of the string, you get an indexError, saying that the string index is out of range. 
+
+<A.6>
+
+When you use a negative index, the index starts in the opposite way. (Starting backwards)
+In this case, -1 is z , -2 is y ... 
+
+<A.7>
+
+When using an integer as the index, you get an TypeError, saying that the string indices must be integers 
+
+
+############################
+
+<B.1>
+A function is like a black-box with an input and output. In this case, input to a function is called an argument(parameter). And for the output of a function it is called the returned value. A function may receive values, and do some work with those received values.
+
+<B.2>
+docstring(documentation string): a string associated with the function's definition, which appears when you use the help function. 
+
+1) purpose statements: a short comment to write a brief description of what the function does. 
+
+2)signature: also called a contract is a term for a description of the types of the arguments and the type for the retuned value. (Usually write it as int -> str )
+
+
+<B.3>
+A function can not be called before it has been defined. Before calling a function you have to define the function.
+
+<B.4>
+There are no limits in parameters in a function. 
+
+<B.5>
+You can only return one value from a function. But you can return a single value that contains two or more values. 
+
+<B.6>
+Basically arguments and parameters are the same. Arguments are the values we pass to a function when we call that function, while parameters are a variable defined by a function that receives a value when it is defined. So if there is a function, 
+	def name(par1. Par2):  <- parameters are listed here 
+	<body of function>
+	return ... 
+
+	name(agr1,agr2) <- these are arguments
+
+<B.7>
+1) provides a convenient way of associating documentation of a function which helps the coder himself understand the function's description. 
+2) helps other people using or seeing your code understand the function you have defined. 
+
+<B.8>
+All variables created inside of functions are scoped to that function (function scope, or local scope). So all functions have their own scope.
+
+<B.9>
+Global variables are declared outside any function and can be used on any function in the program, while local variables are declared inside a function which can only be used inside that function.
+
+
+
+

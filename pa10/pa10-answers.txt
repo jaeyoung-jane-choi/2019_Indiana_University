@@ -1,0 +1,43 @@
+
+"A201 / Fall 2019" (or "A597 / Fall 2019"), "Programming Assignment 10", Jane Choi, janechoi
+
+
+A.1
+
+For an interactive game app I would..
+
+Attributes : nickname, age , sex, status 
+
+Methods: eat, drink, sleep
+
+A.2 
+
+To instantiate is to create an instance of an object in an object-oriented programming language.
+
+
+A.3
+When naming a class, we capitalize the first letter of the name. 
+We use camel case formats to name a class. 
+We can easily distinguish a class with other methods or attributes 
+
+A.4
+When writing a docstring for a class .. 
+We need to first write docstring's purpose statement which describes the general of what the class represents.
+Also we need to write a list of attributes it has. (This is the difference with functions)
+We mention the name of the attribute and type, and what it represents  
+
+A.5
+
+No it is not allowed.When defining an instance method, the first parameter of the method should always be self(or something else calling itself). 
+But methods having self and without another parameter will work. 
+
+
+A.6
+Yes you can use the first parameter something other than self. 
+What that parameter represents will always be the same whether it is self or not.
+You would need to not use self, but the other name for places where self is.
+
+
+A.7 
+
+The purpose of the constructor is to initialize the object of a class

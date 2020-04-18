@@ -1,0 +1,50 @@
+"A201 / Fall 2019" (or "A597 / Fall 2019"), "Reading Assignment 03", "Jaeyoung Choi(Jane Choi), "janechoi"
+
+
+
+A. 
+
+The first row is the definition of the function. 
+And the second row is the signature !
+
+1. toThePower() : 
+	"""takes two numbers (x,y) and returns the value of x to the power of y	
+
+	number, number ->number"""
+
+
+2. quadruplicate():
+	"""takes a string and returns the three copies of that string together  
+	
+	string -> string"""
+
+
+3. subtract():
+	"""takes two numbers and returns the difference between them 
+	
+	number, number -> number"""
+
+
+
+4.overlap():
+	"""?I don't know what the function is.. but still the signature is..
+
+	string, string -> number"""
+
+
+
+5. multiplicate():
+	"""takes a string and number , and returns copies of the string as much as the number
+	
+	string, number -> string"""
+
+
+
+
+
+
+
+
+
+
+

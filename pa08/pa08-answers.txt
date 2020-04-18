@@ -1,0 +1,86 @@
+
+"A201 / Fall 2019" (or "A597 / Fall 2019"), "Programming Assignment 08", Jane Choi, janechoi
+
+
+
+#A.1 
+For loop is when you know how many times the code needs to be in loop.
+
+While loop is when it is unsure how many times the code should be in loop
+
+
+#A.2
+I prefer a while loop since we don't always know the particular amount we need for the loop. 
+
+
+
+#G.1
+
+['S', 'h', 'a', 'r', 'e', 'd','!']
+
+Since we used append to add '!'
+
+
+#G.2
+
+['S', 'h', 'a', 'r', 'e', 'd','!']
+
+Since we used append to add '!' to listX, the same is done with listY too since it was copied by =. 
+
+#G.3
+
+['S', 'h', 'a', 'r', 'e', 'd']
+
+Since listZ is stored in another list, another id, it is not modified by adding to listX
+
+#G.4
+['S', 'h', 'r', 'e', 'd','!']
+Since listY's index 2 value has been deleted, and listX & listY are using the same list listX's value is deleted too.
+
+
+#G.5
+['S', 'h', 'r', 'e', 'd','!']
+Since listY's index 2 value has been deleted 
+
+#G.6
+
+['S', 'h', 'a', 'r', 'e', 'd']
+
+Since listZ is stored in another list, another id, it is not modified by changes in listY or listX 
+
+#G.7
+
+['S', 'h', 'r', 'e', 'd','!']
+
+Since listZ is stored in another list, another id, listY/listX is not modified by changes in listZ
+
+#G.8
+
+['S', 'h', 'r', 'e', 'd','!']
+
+Since listZ is stored in another list, another id, listY/listX is not modified by changes in listZ
+
+#G.9
+['S', 'h', 'a', 'r', 'e']
+
+Since the code is said to remove 'd' , 'd' is removed. 
+
+#G.10
+[2,0,1,8,10,18]
+
+A new list is valued to listX. 
+
+#G.11
+['S', 'h', 'r', 'e', 'd','!']
+
+Since listX is a new list with a new id, listY is the same elements as before. 
+
+#G.12
+[2,0,1,8,0,0]
+
+The index number 4 and 5 are changed to 0,0
+
+#G.13
+
+[]
+There is nothing left in the listY ; empty list

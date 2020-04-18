@@ -1,0 +1,34 @@
+
+"A201 / Fall 2019" (or "A597 / Fall 2019"), "Programming Assignment 05", Jane Choi, janechoi
+
+
+C.1
+Branching means using "if else" in python.
+Which means that if the branch is True, it runs 
+and when the if branch is False the else branch runs 
+
+C.2
+The assignment operator is the operator that is used to assign the result of the expression to the variable that is left to the operator, which is used with '=' 
+And the equal-to comparison operator is an operator that checks whether the two expressions on both sides are equal or not using '=='. (A T/F statement comes out)
+
+C.3
+1) == (equals); if the values on both sides of operator are equal , the condition is true. 
+2) != (not equal) ; if the values on both sides of operator are not equal , the condition is true.
+3) > (greater than); if the value on the left is bigger than right side one , the condition is true.
+
+C.4
+To form a block of codes, you have to indent the code by the same whitespace 
+
+C.5
+You can use both. If using spaces , you should use four spaces 
+
+C.6
+You can't use an else statement by its own. 
+It has to be used with an if statement 
+
+C.7
+No you have to use the structure in related conditions. 
+
+C.8
+In a function you have to indent the Docstrings, function body. Everything in the function has to be indented. (Except the definition(def function_name():, this does not need indentation)
+

@@ -1,0 +1,45 @@
+"A201 / Fall 2019" ,"Programming Assignment 01","Jaeyoung Choi/ janechoi"
+
+<C>
+
+1. nameError ; 
+the name 'hi' is not defined since it is not a function installed in Python
+-to print 'hi', we need to write down print('hi')
+
+2. SyntaxError ; invalid syntax  
+Using the same quotes makes the sentence end. So using the same quote 3 times closes the words between the first two quotes. 
+-to print the sentence, we need to use different quotes. 
+
+3. SyntaxError; EOL while scanning string literal
+When Using different quotes, the sentence is not closed properly.
+-use the same quote to close the sentence. 
+
+4. SyntaxError; unexpected indent
+When pressing tab in front, an error occurs. 
+-start in the front of the line.
+
+5. TypeError; unsupported operand type(s) for //: 'str' and 'int'
+Inside the quotes, it can not be calculated by an integer.
+-Delete the quotes, to make the numbers able in calculation. 
+
+6. ZeroDivisionError; division by zero
+When dividing a number by zero, Python can't calculate it. 
+-Can't divide numbers by zero 
+
+
+
+<D>
+
+1. When using the interactive Shell mode, we can directly see the results of what we are inputting. However when using the script, we need to first save the process wrote down, and hit F5 or press 'Run module'
+
+2. 'Hello world' 
+
+3. print("Hello world')
+-When printed in the interactive shell, an error occurs and the error message is outputted. But when print in the script nothing is printed. 
+
+4. print('Hello World')
+
+5. ?
+
+
+
