@@ -1,0 +1,323 @@
+---
+title: "finals"
+author: "Jane Choi"
+date: "12/5/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd("/Users/janechoi/Desktop/IU/DATA/finalproject")
+load("/Users/janechoi/Desktop/IU/DATA/finalproject/NSDUH_cleaned.rda")
+dat =df
+pkgs <- c("tidyverse","survey", "dplyr", "haven", "tidyverse",
+          "readxl", "doParallel", "ggplot2", "reshape2", "magrittr")
+sapply(pkgs, require, character.only = T)
+cb = function(x){scale_color_manual(values = cb_palette)}
+
+```
+
+
+
+
+
+
+############################################################################################
+# 1. EDA Purpose
+############################################################################################
+
+
+AMHOUTP3
+
+# 1.ALCMON
+# 2.MHSUITHK
+# 3.EDUHIGHCAT
+# 4.INCOME
+# 5.BMI2
+
+```{r}
+AMHOUTP3= dat$AMHOUTP3
+ALCMON= dat$ALCMON
+MHSUITHK= dat$MHSUITHK
+EDUHIGHCAT= dat$EDUHIGHCAT
+INCOME=dat$INCOME
+BMI2=dat$BMI2
+wt=dat$wt
+
+
+data = as.data.frame(cbind(AMHOUTP3,ALCMON,MHSUITHK,EDUHIGHCAT,INCOME,BMI2,wt))
+```
+
+
+
+
+
+
+############################################################################################
+# 2. Weighted logistic regression 
+############################################################################################
+
+VISUAL:
+```{r}
+wt <- dat$ANALWT_C/sum(dat$ANALWT_C)
+dat$bmicat <- 0
+dat$bmicat[dat$BMI2 >= 30] <- 4
+dat$bmicat[dat$BMI2 < 30] <- 3
+dat$bmicat[dat$BMI2 < 24.9] <- 2
+dat$bmicat[dat$BMI2 < 18.5] <- 1
+
+
+m1 <- glm(AMHOUTP3 ~ CIGMON+ALCMON+ILLMON+                      # substance use
+            DSTNRV30+DSTHOP30+DSTRST30+MHSUITHK+AMDEYR+         # Internalizing problems
+            CATAG6+IRSEX+NEWRACE2+EDUHIGHCAT+                   # Socio-demo
+            IRWRKSTAT+IRINSUR4+INCOME+COUTYP4 + BMI2,
+          family = quasibinomial(link = "logit"),
+          weights = wt,
+          data = dat)
+
+
+dat$fittedvalues <- m1$fitted.values
+dat$predict <- predict(m1, type = "response")
+
+
+
+ggplot(data = dat, aes(x = BMI2, y = predict)) + geom_smooth(method = "gam", se= F) + theme_classic() + labs(x = "BMI", y = "Probability") + ggtitle("BMI respect to the probability of  \n being an outpatient mental health")
+
+ggplot(data = dat, aes(x = BMI2, y = predict, color = as.factor(bmicat))) + geom_smooth(method = "gam", se =F) + theme_classic() + ggtitle("BMI respect to the probability of  \n being an outpatient mental health") +
+  scale_color_discrete(name = "BMI category", labels = c("Underweight", "Normal weight", "over weight", "Obese")) + labs(x = "BMI", y = "Probability")
+
+```
+
+
+MODEL: 
+```{r}
+
+
+
+
+wt <- dat$ANALWT_C/sum(dat$ANALWT_C)
+
+m1 <- glm(AMHOUTP3 ~ CIGMON+ALCMON+ILLMON+                      # substance use
+            DSTNRV30+DSTHOP30+DSTRST30+MHSUITHK+AMDEYR+         # Internalizing problems
+            CATAG6+IRSEX+NEWRACE2+EDUHIGHCAT+                   # Socio-demo
+            IRWRKSTAT+IRINSUR4+INCOME+COUTYP4 + BMI2,
+          family = quasibinomial(link = "logit"),
+          weights = wt,
+          data = dat)
+
+# step(m1, direction = "both", criteria = "BIC")
+summary(m1)
+
+
+```
+
+
+
+
+
+```{r}
+#or1 <- exp(cbind(coef(m1), confint(m1))) # OR & 95% CI
+#round(or1, 2)
+```
+
+
+############################################################################################
+# 3. Visualization
+############################################################################################
+
+# 1.ALCMON
+# 2.MHSUITHK
+# 3.EDUHIGHCAT
+# 4.INCOME
+
+
+
+```{r}
+dat =data
+
+### 1. Alchhol
+
+dat$alcohol <- ifelse(dat$ALCMON=="0", "No", "Yes")
+
+# 1) Additive model
+m1.1 <- glm(AMHOUTP3 ~ BMI2+alcohol,
+            family = quasibinomial(link = "logit"),
+            weights = wt,
+            data = dat)
+summary(m1.1)
+
+d1.1 = expand.grid(BMI2 = 0:70, 
+                   alcohol = c("No","Yes"))
+pred_m11 <- predict(m1.1, newdata = d1.1, type = "response") 
+output11 <- data.frame(prob = pred_m11, BMI2 = d1.1$BMI2, alcohol = d1.1$alcohol)
+ggplot(data = output11, aes(x=BMI2, y = prob, colour=alcohol)) +
+  geom_line() +
+  labs(x = "BMI", y = "Probability", title = "Additive model with alcohol consumption and BMI") + 
+  theme_classic()
+
+# 2) Interaction model
+m1.2 <- glm(AMHOUTP3 ~ BMI2*alcohol,
+            family = quasibinomial(link = "logit"),
+            weights = wt,
+            data = dat)
+summary(m1.2)
+
+d1.2 = expand.grid(BMI2 = 0:70, 
+                   alcohol = c("No","Yes"))
+pred_m12 <- predict(m1.2, newdata = d1.2, type = "response") 
+output12 <- data.frame(prob = pred_m12, BMI2 = d1.2$BMI2, alcohol = d1.2$alcohol)
+
+ggplot(data = output12, aes(x=BMI2, y = prob, colour=alcohol)) +
+  geom_line() +
+  labs(x = "BMI", y = "Probability", title =  "Interaction model with alcohol consumption and BMI") + 
+  theme_classic()
+
+
+
+
+```
+
+
+
+
+### 2. Suicide thinking
+```{r}
+
+
+
+dat$Suicide <- ifelse(dat$MHSUITHK=="0", "No", "Yes")
+
+
+# 1) Additive model
+m2.1 <- glm(AMHOUTP3 ~ BMI2+Suicide,
+            family = quasibinomial(link = "logit"),
+            weights = wt,
+            data = dat)
+summary(m2.1)
+
+d2.1 = expand.grid(BMI2 = 0:70, 
+                   Suicide = c("No","Yes"))
+pred_m21 <- predict(m2.1, newdata = d2.1, type = "response") 
+output21 <- data.frame(prob = pred_m21, BMI2 = d2.1$BMI2, Suicide = d2.1$Suicide)
+
+ggplot(data = output21, aes(x=BMI2, y = prob, colour=Suicide)) +
+  geom_line() +
+  labs(x = "BMI", y = "Probability", title = "Additive model with suicide thinking and BMI") + 
+  theme_classic()
+
+# 2) Interaction model
+m2.2 <- glm(AMHOUTP3 ~ BMI2*Suicide,
+            family = quasibinomial(link = "logit"),
+            weights = wt,
+            data = dat)
+summary(m2.2)
+
+d2.2 = expand.grid(BMI2 = 0:70, 
+                   Suicide = c("No","Yes"))
+pred_m22 <- predict(m2.2, newdata = d2.2, type = "response") 
+output22 <- data.frame(prob = pred_m22, BMI2 = d2.2$BMI2, Suicide = d2.2$Suicide)
+
+ggplot(data = output22, aes(x=BMI2, y = prob, colour=Suicide)) +
+  geom_line() +
+  labs(x = "BMI", y = "Probability", title =  "Interaction model with suicide thinking and BMI") + 
+  theme_classic()
+
+
+```
+
+
+
+### 3. Educational level
+```{r}
+
+
+dat$Education <- ifelse(dat$EDUHIGHCAT=="1", "Less high school",
+                            ifelse(dat$EDUHIGHCAT == "2", "High school graduate",
+                            ifelse(dat$EDUHIGHCAT == "3", "Some college/Associated",
+                            ifelse(dat$EDUHIGHCAT == "4", "College graduate","NA")
+                                         )))
+# 1) Additive model
+m3.1 <- glm(AMHOUTP3 ~ BMI2 + Education,
+            family = quasibinomial(link = "logit"),
+            weights = wt,
+            data = dat)
+summary(m3.1)
+
+d3.1 = expand.grid(BMI2 = 0:70,Education = c("Less high school", "High school graduate",
+                                           "Some college/Associated", "College graduate"))
+pred_m31 <- predict(m3.1, newdata = d3.1, type = "response") 
+output31 <- data.frame(prob = pred_m31, BMI2 = d3.1$BMI2, Education = d3.1$Education)
+
+ggplot(data = output31, aes(x=BMI2, y = prob, colour=Education)) +
+  geom_line() +
+  labs(x = "BMI", y = "Probability", title = "Additive model with educational level and BMI") + 
+  theme_classic()
+
+# 2) Interaction model
+m3.2 <- glm(AMHOUTP3 ~ BMI2*Education,
+            family = quasibinomial(link = "logit"),
+            weights = wt,
+            data = dat)
+summary(m3.2)
+
+d3.2 = expand.grid(BMI2 = 0:70, 
+                   Education= c("Less high school", "High school graduate",
+                  "Some college/Associated", "College graduate"))
+pred_m32 <- predict(m3.2, newdata = d3.2, type = "response") 
+output32 <- data.frame(prob = pred_m32, BMI2 = d3.2$BMI2, Education= d3.2$Education)
+
+ggplot(data = output32, aes(x=BMI2, y = prob, colour=Education)) +
+  geom_line() +
+  labs(x = "BMI", y = "Probability", title =  "Interaction model with educational level and BMI") + 
+  theme_classic()
+
+```
+
+
+### 4. Income
+```{r}
+
+dat$Income <- ifelse(dat$INCOME=="1", "Less than $20,000",
+                      ifelse(dat$INCOME == "2", "$20,000 - $49,999",
+                        ifelse(dat$INCOME == "3", "$50,000 - $74,999",
+                          ifelse(dat$INCOME == "4", "$75,000 or More","NA")
+                          )))
+
+# 1) Additive model
+m4.1 <- glm(AMHOUTP3 ~ BMI2+Income,
+            family = quasibinomial(link = "logit"),
+            weights = wt,
+            data = dat)
+summary(m4.1)
+
+d4.1 = expand.grid(BMI2 = 0:70, 
+                   Income = c("Less than $20,000", "$20,000 - $49,999", "$50,000 - $74,999", "$75,000 or More"))
+pred_m41 <- predict(m4.1, newdata = d4.1, type = "response") 
+output41 <- data.frame(prob = pred_m41, BMI2 = d4.1$BMI2, Income = d4.1$Income)
+
+ggplot(data = output41, aes(x=BMI2, y = prob, colour=Income)) +
+  geom_line() +
+  labs(x = "BMI", y = "Probability", title = "Additive model with income and BMI") + 
+  theme_classic()
+
+# 2) Interaction model
+m4.2 <- glm(AMHOUTP3 ~ BMI2*Income,
+            family = quasibinomial(link = "logit"),
+            weights = wt,
+            data = dat)
+summary(m4.2)
+
+d4.2 = expand.grid(BMI2 = 0:70, 
+                   Income = c("Less than $20,000", "$20,000 - $49,999", "$50,000 - $74,999", "$75,000 or More"))
+pred_m42 <- predict(m4.2, newdata = d4.2, type = "response") 
+output42 <- data.frame(prob = pred_m42, BMI2 = d4.2$BMI2, Income = d4.2$Income)
+
+ggplot(data = output42, aes(x=BMI2, y = prob, colour=Income)) +
+  geom_line() +
+  labs(x = "BMI", y = "Probability", title =  "Interaction model with income and BMI") + 
+  theme_classic()
+
+```
+
+
+

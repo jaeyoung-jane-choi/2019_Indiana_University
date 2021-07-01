@@ -1,0 +1,508 @@
+---
+title: 'Mini Project #3'
+author: "Jane Choi"
+date: "10/8/2019"
+output:
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+setwd("/Users/janechoi/Desktop/IU/DATA/miniproject")
+library(gapminder)
+library(tidyverse)
+library(rio)
+library(data.table)
+library(GGally)
+library(mgcv)
+library(modelr)
+library(broom)
+library(arm)
+library(plotly)
+
+
+cb_palette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+life.expectancy =fread('life_expectancy_years.csv',header = T)
+population<-fread('population_total.csv',header = T)
+gdp<-fread('income_per_person_gdppercapita_ppp_inflation_adjusted.csv',header = T)
+gapminder <- gapminder
+
+
+#unique(population$country) #193
+#unique(gapminder$country) #142
+#unique(gdp$country) #193
+#unique(life.expectancy$country) #187
+
+gapminder.new<- gapminder[,c(1,2)]
+
+gapminder.new<- unique(gapminder.new)
+
+new.gdp <- merge(gdp, gapminder.new, by='country')  
+new.life.expectancy <- merge(life.expectancy, gapminder.new, by='country') 
+new.population <- merge(population, gapminder.new, by='country') 
+
+
+
+life.expectancy.long = gather(new.life.expectancy, key = life.expectancy.date , value = life.expectancy.number, 2:220)
+gdp.long <- gather(new.gdp, key= gdp.date, value= gdp.number , 2:242)
+
+population.long <- gather(new.population, key=population.date, value=population.number, 2:302)
+
+
+gdp.long$key <- paste(gdp.long$country , by='-',gdp.long$gdp.date)
+population.long$key <- paste(population.long$country , by='-',population.long$population.date)
+life.expectancy.long$key <- paste(life.expectancy.long$country , by='-',life.expectancy.long$life.expectancy.date)
+
+
+
+data<- full_join(gdp.long, life.expectancy.long, by='key')
+data<- full_join(data, population.long, by='key')
+
+data<-data[,-c(6:8,10:12)]
+
+colnames(data) <- c("country" , "continent","date","gdp.number", "key" ,"life.expectancy.number", "population.number")
+
+
+data<- data[,c(5,3,1,2,4,6,7)]
+
+#head(data)
+
+colSums(is.na(data))
+
+data <- data[is.na(data$life.expectancy.number) == F,]
+colSums(is.na(data))
+
+
+
+
+#write.csv(data, file='data.csv',row.names=F)
+#data.new<-read.csv('data.csv')
+
+data.ww2 <- data %>%
+  filter(data$date > 1939)
+
+
+
+```
+
+
+
+
+Making date.factor variable :
+```{r}
+data.ww2$date.factor <- 0
+
+i=0
+
+for ( i in 1:10586){
+  if (data.ww2[i,2] <= 1949 ) {
+    data.ww2[i,8] <- '1940s'}
+  
+  else if (data.ww2[i,2] <= 1959){
+     data.ww2[i,8] <- '1950s'
+  }
+   else if (data.ww2[i,2] <= 1969){
+     data.ww2[i,8] <- '1960s'
+   }
+   else if (data.ww2[i,2] <= 1979){
+     data.ww2[i,8] <- '1970s'
+   }
+   else if (data.ww2[i,2] <= 1989){
+     data.ww2[i,8] <- '1980s'
+   }
+   else if (data.ww2[i,2] <= 1999){
+     data.ww2[i,8] <- '1990s'
+   }
+   else if (data.ww2[i,2] <= 2009){
+     data.ww2[i,8] <- '2000s'
+   }
+   else{ data.ww2[i,8] <- '2010s'
+  }
+}
+
+
+
+data.ww2$date<-as.factor(data.ww2$date)
+
+data.ww2$date.factor<-as.factor(data.ww2$date.factor)
+
+str(data.ww2)
+
+```
+
+
+
+
+
+Seeing  plots by ggpairs:
+```{r}
+
+
+ggpairs(data.ww2[,c(5:6,8)])
+
+
+```
+
+
+Seeing  plots by plotly:
+```{r}
+#plot_ly(data.ww2, x= ~log(gdp.number) ,y=~life.expectancy.number , z=~date, type= 'scatter3d' , marker= list(size=1.5))
+```
+
+
+
+
+
+##1. Method: Modeling without continent information:
+
+###(1-1) model with linear:
+
+```{r}
+data.ww2.lm = lm(life.expectancy.number ~ log10(gdp.number) + date, data = data.ww2 )
+data.ww2.lm.df = augment(data.ww2.lm)
+
+colnames(data.ww2.lm.df) = c("life.expectancy.number" , "gdp.number" ,  "date"  ,   ".fitted"  , ".se.fit" ,  ".resid" , ".hat" ,   ".sigma" ,".cooksd"  ,   ".std.resid"  )
+
+ggplot(data.ww2.lm.df, aes(x = gdp.number, y = .resid)) + 
+  geom_smooth(se=F) +geom_point(alpha=0.1) +
+  ggtitle('Residual Plot for  Linear Model ') +
+  labs(x='log10 of gdp')
+
+
+
+ggplot(data.ww2.lm.df, aes(x = .fitted, y = abs(.resid))) + 
+  geom_smooth(se=F) +geom_point(alpha=0.1)+
+  ggtitle('Residual & Fitted Plot for Linear Model ') +
+  labs(x='log10 of gdp')
+
+```
+
+
+-not good residual plot
+
+
+Make predictions: 
+```{r}
+
+
+ww2.lm.grid <-expand.grid(gdp.number = seq(5.5, 11.6, 0.1), date = seq(1940,2018,1))
+
+ww2.lm.grid$date<-as.factor(ww2.lm.grid$date)
+
+
+ww2.lm.grid.predict = predict(data.ww2.lm, newdata = ww2.lm.grid)
+ww2.lm.grid.predict = data.frame(ww2.lm.grid, life.expectancy = as.vector(ww2.lm.grid.predict))
+
+
+#ggplot(ww2.lm.grid.predict, aes(x = gdp.number, y = life.expectancy)) +  geom_line() +facet_wrap(~date)
+
+
+
+ggplot(ww2.lm.grid.predict, aes(x = gdp.number, y = life.expectancy, group = date, color = date)) + geom_line() +
+  ggtitle('Predicted Life Expectancy per GDP after WW2' ) + 
+labs(x= 'Log 10 of GDP per capita' , y= 'Life Expectancy', subtitle = 'Using linear model with seperate dates')
+
+```
+
+
+-looks different in every date / date has effect! 
+
+
+
+
+
+###(1-2) model with liner : using date.factors
+
+
+```{r}
+data.ww2.lm.f = lm(life.expectancy.number ~ log10(gdp.number) + date.factor, data = data.ww2)
+data.ww2.lm.f.df = augment(data.ww2.lm.f)
+
+colnames(data.ww2.lm.f.df) = c("life.expectancy.number" , "gdp.number" ,  "date"  ,   ".fitted"  , ".se.fit" ,  ".resid" , ".hat" ,   ".sigma" ,".cooksd"  ,   ".std.resid"  )
+
+ggplot(data.ww2.lm.f.df, aes(x = gdp.number, y = .resid)) + 
+  geom_smooth(se=F) +geom_point(alpha=0.1) +
+  ggtitle('Residual Plot for  Linear Model ') +
+  labs(x='log10 of gdp')
+
+
+
+ggplot(data.ww2.lm.df, aes(x = .fitted, y = abs(.resid))) + 
+  geom_smooth(se=F) +geom_point(alpha=0.1)+
+  ggtitle('Residual & Fitted Plot for Linear Model ') +
+  labs(x='log10 of gdp')
+
+```
+
+
+
+
+Make predictions: 
+```{r}
+
+
+ww2.lm.f.grid <-expand.grid(gdp.number = seq(5.5, 11.6, 0.1), date.factor = c('1940s','1950s','1960s','1970s','1980s','1990s','2010s'))
+
+ww2.lm.f.grid$date.factor<-as.factor(ww2.lm.f.grid$date.factor)
+
+
+ww2.lm.f.grid.predict = predict(data.ww2.lm.f, newdata = ww2.lm.f.grid)
+ww2.lm.f.grid.predict = data.frame(ww2.lm.f.grid, life.expectancy = as.vector(ww2.lm.f.grid.predict))
+
+
+
+#ggplot(ww2.lm.f.grid.predict, aes(x = gdp.number, y = life.expectancy)) +  geom_line() +facet_wrap(~date.factor)
+
+ggplot(ww2.lm.f.grid.predict, aes(x = gdp.number, y = life.expectancy, group = date.factor, color = date.factor)) + geom_line()+
+  ggtitle('Predicted Life Expectancy per GDP after WW2' ) + 
+  labs(x= 'Log 10 of GDP per capita' , y= 'Life Expectancy', subtitle = 'Using linear model with dates together')+
+  scale_color_manual(values=cb_palette)
+
+```
+
+
+
+Check the R-squared value for each model: 
+
+```{r}
+summary(data.ww2.lm) #Adjusted R-squared:  0.7931 
+summary(data.ww2.lm.f) #Adjusted R-squared:  0.7877 
+```
+
+
+
+
+
+
+
+
+
+##2. Method: Modeling with different continent information:
+
+###(2-0) not using date when modeling with linear: 
+
+Write a function to fit a LM for each group:
+```{r}
+continent.lm.no.date.f = function(data){
+  lm(life.expectancy.number ~ log10(gdp.number), data = data)
+}
+```
+
+Make a nested data frame:
+
+```{r}
+
+continent.lm.m.no.date.f = data.ww2 %>%
+  group_by(continent) %>%
+  nest()
+
+
+continent.lm.m.no.date.f.m = map(continent.lm.m.no.date.f$data, continent.lm.no.date.f)
+
+continent.lm.m.no.date.f = mutate(continent.lm.m.no.date.f, model = continent.lm.m.no.date.f.m)
+
+continent.lm.m.no.date.f = mutate(continent.lm.m.no.date.f, .fitted = map2(data, model, add_predictions))
+
+continent.lm.m.no.date.f = mutate(continent.lm.m.no.date.f, .resid = map2(data, model, add_residuals))
+
+continent.lm.m.no.date.f.fitted = unnest(continent.lm.m.no.date.f, .fitted,.resid)
+
+
+
+continent.lm.m.no.date.f.fitted<-continent.lm.m.no.date.f.fitted[,-c(10:16)]
+
+```
+
+
+
+ploting the  residuals :
+```{r}
+
+ggplot(continent.lm.m.no.date.f.fitted , aes(x=(gdp.number),y= resid))+ 
+  geom_point()+ geom_smooth(method='loess',se=F)+
+  scale_x_log10() +
+  ggtitle("Residual Plot for Gdp per Capita and Life Expectancy")+
+  labs(x='log 10 of gdp per capita')
+
+
+ggplot(continent.lm.m.no.date.f.fitted , aes(x=(gdp.number),y= abs(resid))) + 
+  geom_point()+ geom_smooth(method='loess',se=F)+
+  scale_x_log10() +
+  ggtitle("Absolute Residual Plot for Gdp per Capita and Life Expectancy")+
+  labs(x='log 10 of gdp per capita')
+
+```
+
+
+
+
+Make model visuable: 
+
+```{r}
+
+continent.lm.m.no.date.f.fitted.df<-as.data.frame(continent.lm.m.no.date.f.fitted)
+
+
+ggplot(continent.lm.m.no.date.f.fitted.df, aes(x = gdp.number, y = pred, group=continent , color= continent)) +
+  geom_line()+scale_x_log10() +
+  ggtitle('Predicted Life Expectancy per GDP after WW2' ) + 
+  labs(x= 'Log 10 GDP per capita' , y= 'Life Expectancy', subtitle = 'Using linear model by continents')+
+  scale_color_manual(values=cb_palette)
+
+
+```
+
+###(2-1) model with linear:
+
+
+Write a function to fit a LM for each group:
+```{r}
+continent.lm = function(data){
+  lm(life.expectancy.number ~ log10(gdp.number) + date, data = data)
+}
+```
+
+Make a nested data frame:
+
+```{r}
+
+continent.lm.m = data.ww2 %>%
+  group_by(continent) %>%
+  nest()
+
+
+continent.lm.m.m = map(continent.lm.m$data, continent.lm)
+
+continent.lm.m = mutate(continent.lm.m, model = continent.lm.m.m)
+continent.lm.m = mutate(continent.lm.m, .fitted = map2(data, model, add_predictions))
+continent.lm.m = mutate(continent.lm.m, .resid = map2(data, model, add_residuals))
+continent.lm.m.fitted = unnest(continent.lm.m, .fitted,.resid)
+
+continent.lm.m.fitted<-continent.lm.m.fitted[,-c(10:16)]
+
+
+
+```
+
+
+
+ploting the  residuals :
+```{r}
+
+ggplot(continent.lm.m.fitted , aes(x=(gdp.number),y= resid))+ 
+  geom_point()+ geom_smooth(method='loess',se=F)+
+  scale_x_log10() +
+  ggtitle("Residual Plot for Gdp per Capita and Life Expectancy")+
+  labs(x='log 10 of gdp per capita')
+
+
+ggplot(continent.lm.m.fitted , aes(x=(gdp.number),y= abs(resid))) + 
+  geom_point()+ geom_smooth(method='loess',se=F)+
+  scale_x_log10() +
+  ggtitle("Absolute Residual Plot for Gdp per Capita and Life Expectancy")+
+  labs(x='log 10 of gdp per capita')
+
+```
+
+
+Make model visuable: 
+
+```{r}
+
+continent.lm.m.fitted.df<-as.data.frame(continent.lm.m.fitted)
+
+
+ggplot(continent.lm.m.fitted.df, aes(x = gdp.number, y = pred, group=date , color= date)) +
+  geom_line()+scale_x_log10() +
+  facet_grid(~continent)+
+  ggtitle('Predicted Life Expectancy per GDP after WW2' ) + 
+  labs(x= 'Log 10 GDP per capita' , y= 'Life Expectancy', subtitle = 'Using linear model faceting by continents')
+
+
+
+
+
+```
+
+
+
+###(1-2) model with liner : using date.factors
+
+Write a function to fit a LM for each group:
+```{r}
+continent.lm.f = function(data){
+  lm(life.expectancy.number ~ log10(gdp.number) + date.factor, data = data)
+}
+```
+
+Make a nested data frame:
+
+```{r}
+continent.lm.m.f = data.ww2 %>%
+  group_by(continent) %>%
+  nest()
+
+continent.lm.m.f.m = map(continent.lm.m.f$data, continent.lm.f)
+
+continent.lm.m.f = mutate(continent.lm.m.f, model = continent.lm.m.f.m)
+continent.lm.m.f = mutate(continent.lm.m.f, .fitted = map2(data, model, add_predictions))
+continent.lm.m.f = mutate(continent.lm.m.f, .resid = map2(data, model, add_residuals))
+continent.lm.m.f.fitted = unnest(continent.lm.m.f, .fitted,.resid)
+
+continent.lm.m.f.fitted<-continent.lm.m.f.fitted[,-c(10:16)]
+
+
+
+```
+
+
+
+plotting the  residuals :
+```{r}
+
+ggplot(continent.lm.m.f.fitted , aes(x=(gdp.number),y= resid))+ 
+  geom_point()+ geom_smooth(method='loess',se=F)+
+  scale_x_log10() +
+  ggtitle("Residual Plot for Gdp per Capita and Life Expectancy")+
+  labs(x='log 10 of gdp per capita')
+
+
+ggplot(continent.lm.m.f.fitted , aes(x=(gdp.number),y= abs(resid))) + 
+  geom_point()+ geom_smooth(method='loess',se=F)+
+  scale_x_log10() +
+  ggtitle("Absolute Residual Plot for Gdp per Capita and Life Expectancy")+
+  labs(x='log 10 of gdp per capita')
+
+```
+
+
+
+
+Visual graph:
+
+```{r}
+
+ggplot(continent.lm.m.f.fitted, aes(x = gdp.number, y = pred, group = date.factor, color = date.factor)) +
+  geom_line()+scale_x_log10()+
+  facet_grid(~continent)+
+  ggtitle('Predicted Life Expectancy per GDP after WW2' ) + 
+  labs(x= 'Log 10 of GDP per capita' , y= 'Life Expectancy', subtitle = 'Using linear model considering continents and seperate dates', caption = 'Faceted by Continent')+scale_color_manual(values=cb_palette)
+
+
+ggplot(continent.lm.m.f.fitted, aes(x = gdp.number, y = pred, group = continent, color = continent)) +
+  geom_line()+scale_x_log10()+
+  facet_grid(~date.factor)+
+  ggtitle('Predicted Life Expectancy per GDP after WW2' ) + 
+  labs(x= 'Log 10 of GDP per capita' , y= 'Life Expectancy', subtitle = 'Using linear model considering continents with dates together', caption = 'Faceted by Date') +scale_color_manual(values=cb_palette)
+
+```
+
+
+-As the date increases the GDP as well increase! 
+-The GDP differs among continents too 
+-And the life expectancy increases as well as the gdp increases 
+
+

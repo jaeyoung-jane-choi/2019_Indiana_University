@@ -1,0 +1,165 @@
+---
+title: "Final Code_MP2"
+author: "Jane Choi"
+date: "11/20/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+```{r}
+# install.packages("effects")
+library(effects)
+```
+
+
+```{r}
+setwd("/Users/janechoi/Desktop/IU/DATA/miniproject2")
+
+
+library(tidyverse)
+cb_palette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+load('CCES16_Common_OUTPUT_Feb2018_VV.RData')
+```
+
+```{r}
+
+#Libraries
+library(tidyverse)
+cb_palette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+#----------Loading the data
+
+#-------Selecting variables of interest
+x=x[,c('V101','commonweight_vv_post', 'tookpost','gender','educ','race','pid7','CC16_326','CC16_410a','CC16_331_1','CC16_331_2','CC16_331_3','CC16_331_7')] 
+
+#-----------Keeping only who respond post respondent survey
+#Variable: tookpost - if Yes, then the individual respond post respondent survey
+x<- x %>%
+  filter(tookpost == 'Yes')
+
+#------- Keeping those who voted for Obama in 2012 elections
+#Variable: CC16_326
+x<- x %>%
+  filter(CC16_326 == 'Barack Obama')
+
+sum(x$CC16_326 == "Barack Obama") == 23395 #Verifying we have the same amount of people as the professor
+
+#------ Creating a Binary variable indicating people voted for Trump or not in 2016 elections
+
+#Variable: CC16_410a (indicates the candidate the respondent voted for)
+#New variable: Trump vote (1 if they did vote for Trump (CC16_410a == Donald Trump (Republican), zero otherwise)
+
+x$trumpvote <- NULL
+x$trumpvote = ifelse(x$CC16_410a == "Donald Trump (Republican)",1,0)
+##x$trumpvote[x$CC16_410a == "Donald Trump (Republican)"] <- 1
+##x$trumpvote[x$CC16_410a == "Hillary Clinton (Democrat)"] <- 0
+
+table(x$trumpvote)
+sum(x$trumpvote) == 2121 #Checking that we are having the same fact as the professor.
+
+#Creating quantitative variable based on pro inmigration response
+#Variables: CC16_331_1; CC16_331_2; CC16_331_3; CC16_331_7;
+#Pro Inmigration response; Yes, No, Yes No, respectively.
+
+x$proinmi <- NULL
+
+#-----Changing to numeric format the inmigration variables based on pro inmigration
+
+x$CC16_331_1Num <- ifelse(x$CC16_331_1 == "Yes", 1,0)
+
+x$CC16_331_2Num <- ifelse(x$CC16_331_2 == "No", 1,0)
+
+
+x$CC16_331_3Num <- ifelse(x$CC16_331_3 == "Yes", 1,0)
+
+x$CC16_331_7Num <- ifelse(x$CC16_331_7 == "No", 1,0)
+
+#---- Doing the quantiative variable about proinmigration (Range: 0-4)
+
+for(i in 1: length(x$CC16_331_1))
+{
+  x$proinmi[i] <- sum(x$CC16_331_1Num[i],
+                     x$CC16_331_2Num[i],
+                     x$CC16_331_3Num[i],
+                     x$CC16_331_7Num[i],
+                     na.rm = F)
+}
+
+
+# ---- Recoding the variable race (from eight levels to four levels)
+#Variable: Race
+x$race<-as.factor(as.character(x$race))
+
+x$race=dplyr::recode(x$race, `Asian` ="Other",`Native American`="Other",`Mixed`="Other",`Middle Eastern`="Other")
+
+# ---- Creating an ordered categorical vairable for the education level
+#Variable: Education
+
+x$educ<-factor(x$educ, levels = c("No HS" ,"High school graduate" ,"Some college"  , "2-year"  , "4-year" ,"Post-grad"))
+
+x$educLevel <- ifelse(x$educ == "No HS", 1, 
+                      ifelse(x$educ == "High school graduate",2,
+                             ifelse(x$educ == "Some college", 3,
+                                    ifelse(x$educ == "2-year", 4,
+                                           ifelse(x$educ == "4-year", 5,
+                                                  ifelse(x$educ == "Post-grad", 6,NA))))))
+
+#Variable of interest: pid7
+#Created variable: Party Level
+#Warning: If the person did not answer or skipped the question the group is 0.
+
+x$PartyLevel <- NULL
+x$PartyLevel <- ifelse(x$pid7 == "Strong Democrat", 1, 
+                      ifelse(x$pid7 == "Not very strong Democrat",2,
+                             ifelse(x$pid7 == "Lean Democrat", 3,
+                                    ifelse(x$pid7 == "Independent", 4,
+                                           ifelse(x$pid7 == "Not sure", 5,
+                                                  ifelse(x$pid7 == "Lean Republican", 6,
+                                                         ifelse(x$pid7 == "Not very strong Republican", 7,
+                                                                ifelse(x$pid7 == "Strong Republican", 8,
+                                                                       ifelse(is.na(x$pid7), NA,0)))))))))
+
+
+
+# ---- Creating the Obama dataset
+# write.csv(x, "Obama.csv")
+
+```
+
+
+
+make a df for variables:
+```{r}
+wt <- x$commonweight_vv_post
+ID <- x$V101
+gender <-x$gender
+educ<- x$educ
+race <- x$race
+party<- x$pid7
+vote_obama <- x$CC16_326
+not_vote_obama<-x$CC16_410a
+trumpvote<-x$trumpvote
+proinmi<-x$proinmi #imigration 
+educLevel<-x$educLevel
+PartyLevel<-x$PartyLevel
+
+
+obama <- as.data.frame(cbind(ID, gender, educ, race, party, vote_obama, not_vote_obama, trumpvote, proinmi,wt))
+
+summary(obama)
+colSums(is.na(obama))
+
+```
+
+
+
+
+
+
+
+
