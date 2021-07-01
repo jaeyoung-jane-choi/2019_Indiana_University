@@ -1,0 +1,11 @@
+"A201 / Fall 2019" , "Lab Task 01", Jaeyoung Choi(janechoi)
+
+Operator % : This operator give the remainders of the calculation of dividing. 
+
+Operator //:  This operator gives the portion or share after dividing. Also with only one dash(/) you can get the portion with decimal points.  
+
+function int() : This function returns a whole number.(Integer) It makes any number to a integer.   
+
+Estimated answer: Hello world
+
+I thought that I would get a result of Hello World, but didn’t get any result! I found out because I first inputed just ‘hello world’ After some time, I found out that I didn’t put in any function. I forgot to put the print() function in front. By the function I finally got my answer ‘Hello world’! 

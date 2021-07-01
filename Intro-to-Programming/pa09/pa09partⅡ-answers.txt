@@ -1,0 +1,23 @@
+"A201 / Fall 2019" (or "A597 / Fall 2019"), "Programming Assignment 09 part II", Jane Choi , janechoi
+
+1. Dictionaries in python have keys and values in pairs. So like in real dictionaries, if you look up the key, the values are corresponded. 
+
+2. They must be unique, since the values are mapped to these keys. If they are not unique it would be a mess in finding the corresponding values for the keys. 
+
+3. The values do not have to be unique. Since the keys are unique, the values are not for distinguishing with others. For example, the value can both be True. 
+
+4. If the keys are mutable, you might have two entries for the same key or might not be able to find a key making the keys not unique, which would make the dictionary hard to use and unable to use. 
+
+5. You would use a tuple. A list would not be able to use for a key.
+
+6. You get a keyError, when asking for a non-existent key. 
+
+7. Then the new value is stored as the value for the key. 
+
+8. It is incorrect since we can not slice a dictionary. it would be right is we can append, remove or change dictionary values. 
+
+9. The mapping from the keys allow the return of the corresponding values.
+
+10. The mutable collection of values. The keys are immutable, only the values are mutable. 
+
+11. A value is returned after the key is told. The code: dictionary[key] would return the values for the key. 

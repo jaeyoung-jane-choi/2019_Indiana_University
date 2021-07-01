@@ -1,0 +1,40 @@
+#"A201 / Fall 2019" (or "A597 / Fall 2019"), "Programming Assignment 12 part II", Jane Choi(Jaeyoung Choi) ,janechoi
+
+1. 
+For the class name, we need to use camelcase. We should use this, since this helps easier distinction between other functions. 
+
+2.
+__str__ is a magic method which provides a human readable representation. Since it is human readable, when using print() inside the codes, you can easily find out where the error is occurring. 
+__repr__ is a magic method which provides a usable python representation of the object. Since this is a python readable output, we can easily distinguish the difference by using python codes when debugging.
+
+3.
+A magic method is a method that is automatically called by python where in predefined situations.
+
+4.
+We use class attributes when we have something that the class's object has in common. For example, when we define a class NikeShoes, we can have a class attribute like the brand name to be Nike. 
+
+5.
+No you can not assign a new value to a class attribute 
+For example if you change the myBike1.total, the total for the whole class will not change.
+
+
+6.
+In default they are public. 
+
+7.
+To make attributes, methods private you should include __ in front of the method/attribute.
+(Like __age)
+
+8.
+No, we can access the objects private attribute/methods through the class. By using getter, setter methods we can access private attributes. 
+
+9.
+If the object is updated outside of an object we might have some data damage. Making private attributes make the user to use methods to access them, not change them arbituarly.
+
+10. 
+When writing about private attributes/methods in definition, we need to always put __ in front, and also when writing the definition of the class, we could add information that the method, attribute is private in the docstring.
+
+
+11.
+You should not access the private attributes/methods outside of the class. 
+

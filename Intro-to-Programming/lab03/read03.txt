@@ -1,0 +1,25 @@
+ "A201 / Fall 2019" (or "A597 / Fall 2019"), "Reading Assignment 03", "Jaeyoung Choi(Jane Choi), "janechoi"
+
+A. 
+
+This is as the same example we did in class, except doubling it this time. I am a bit not sure about when defining functions, how can we limit our income? Like for the example, we need a number but how do we limit it to just a number?
+
+B.
+
+I think for easy functions there is no need to make another local variable, but for complicated functions there is a need for local variables since it is hard to read. 
+
+C. 
+
+I don't think making a function in the interactive Shell is good since its not practical. But still is fun to see that it is able in the interactive shell. 
+
+D. 
+Local variables are just only 'local' in functions! We can use the same name in / out the function! 
+
+E. 
+I think making functions makes python available for everything.
+Starting with a easy program , until a sophisticating program. 
+
+F.
+The square3 that was put in the transcript can't get the help function to work! Why?
+Since we reloaded the script , and didn't write it down again in the transcript. 
+

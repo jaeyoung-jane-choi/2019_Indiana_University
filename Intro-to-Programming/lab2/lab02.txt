@@ -1,0 +1,14 @@
+"A201 / Fall 2019" (or "A597 / Fall 2019"), "Lab 02", Jaeyoung Choi , janechoi
+
+
+I have completed both of the lab tasks by using input(). 
+The function input is a function that prints out the inputed information by the user. 
+By following the specific rules I could easily complete the task. 
+
+I first had the some problems with task B. 
+Because I first inputed int(input) , but if you think about it, not all payments are integers when calculated in dollars. 
+So I changed the int to float. 
+
+To make the '+' work between, you have to put it as str(float(input))). You have to make it a string before you add it with other words. 
+
+One unclear part was that I first used ',' when adding up words in print, so I didn't need to change all the inputs into string. What is the difference when using a comma and a plus sign. 

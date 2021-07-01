@@ -1,0 +1,23 @@
+#"A201 / Fall 2019" (or "A597 / Fall 2019"), "Programming Assignment 13", Jane Choi(Jaeyoung Choi) ,janechoi
+
+D
+
+1. 
+
+1) The zero division error.
+This error occurs during the execution of the program and makes the program halted with an error message, python simply does not allow the division of zero 
+
+2) when printing out a tuple/list with other strings 
+When we want to print out variety of values in one print statement, we need to make all these into a string. Without converting them into a string, an error will occur. 
+
+2. 
+To handle these exceptions we can use the try-except block of code.
+first put the Code in the try part, like 
+try:
+     a= float(input('number'))
+Except:
+     print('not a number')
+By this block of code we can see that the exception is handled 
+
+
+3. When using too much exception handling, you may not notice where the error occurs. For example, if there are lots of reasons your code is wrong, you can't notice where to fix. 

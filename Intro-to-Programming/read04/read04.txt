@@ -1,0 +1,15 @@
+#"A201 / Fall 2019" (or "A597 / Fall 2019"), "Reading Assignment 04","Jane Choi", 'janechoi'
+
+
+<tasks>
+Wrote down the factorial function and a precise version with including the 0!. 
+I wrote down a print_n function which prints out the string as much as the number inputed.
+It was as same as the factorial function! 
+I then wrote recursive functions!
+Lastly I did some turtle drawing
+
+
+I can't really understand how a function calls another function. 
+For defining the do_n() I don't know how a object calls the function 
+I understand that if do_n(a,n) is the function, 
+You have to input a() to make it function , but how would you get the input of anything when you are using another function? 
